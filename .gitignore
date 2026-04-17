@@ -1,0 +1,17 @@
+# Data files
+*.csv
+*.xlsx
+*.zip
+data/
+
+# Python
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints/
+
+# ArcGIS
+*.gdb/
+*.aprx
+
+# System files
+.DS_Store
