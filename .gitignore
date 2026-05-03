@@ -1,17 +1,18 @@
-# Data files
+# Data files (do not upload raw ACLED data per terms of use)
 *.csv
 *.xlsx
-*.zip
-data/
+Data/
 
 # Python
 __pycache__/
 *.py[cod]
 .ipynb_checkpoints/
+*.pyc
 
-# ArcGIS
-*.gdb/
-*.aprx
-
-# System files
+# System
 .DS_Store
+.ipynb_checkpoints/
+
+# Keep Output folder but not data CSVs
+!Output/*.png
+!Output/*.csv
