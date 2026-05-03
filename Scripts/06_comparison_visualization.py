@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Sun May  3 15:49:38 2026
+Created on Fri May  1 15:49:38 2026
 
 @author: francescapaccio
 """
@@ -11,9 +11,8 @@ import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 import numpy as np
 
-# ============================================================================
-# LOAD BOTH ANALYSES
-# ============================================================================
+
+# Load both analyses
 
 civilian_analysis = pd.read_csv('../Data/diplomatic_event_analysis.csv')
 infrastructure_analysis = pd.read_csv('../Data/diplomatic_event_analysis_infrastructure.csv')
@@ -22,18 +21,16 @@ print("Loaded analyses:")
 print(f"  Civilian strikes: {len(civilian_analysis)} diplomatic events")
 print(f"  Infrastructure strikes: {len(infrastructure_analysis)} diplomatic events")
 
-# Prepare data
+# Prepare data and choose colors for bar graph
 events = civilian_analysis['event'].values
 x = np.arange(len(events))
 width = 0.35
+color_before = '#34495E'  
+color_after = '#E67E22'
 
-# Professional neutral colors
-color_before = '#34495E'  # Dark slate blue
-color_after = '#E67E22'   # Orange
 
-# ============================================================================
 # VISUALIZATION 1: Civilian Strikes
-# ============================================================================
+# =================================
 
 fig, ax = plt.subplots(figsize=(14, 8))
 
@@ -45,7 +42,7 @@ ax.bar(x - width/2, civilian_before, width, label='14 days before',
 ax.bar(x + width/2, civilian_after, width, label='14 days after',
        color=color_after, alpha=0.85)
 
-# Add percentage labels
+# Add % labels
 for i, (b, a) in enumerate(zip(civilian_before, civilian_after)):
     if b > 0:
         change = ((a - b) / b) * 100
@@ -67,12 +64,11 @@ ax.grid(axis='y', alpha=0.3)
 
 plt.tight_layout()
 plt.savefig('../Output/civilian_strikes_diplomacy.png', dpi=300, bbox_inches='tight')
-print("✓ Created: civilian_strikes_diplomacy.png")
 plt.close()
 
-# ============================================================================
+
 # VISUALIZATION 2: Infrastructure Strikes
-# ============================================================================
+# =======================================
 
 fig, ax = plt.subplots(figsize=(14, 8))
 
@@ -106,42 +102,36 @@ ax.grid(axis='y', alpha=0.3)
 
 plt.tight_layout()
 plt.savefig('../Output/infrastructure_strikes_diplomacy.png', dpi=300, bbox_inches='tight')
-print("✓ Created: infrastructure_strikes_diplomacy.png")
 plt.close()
 
-# ============================================================================
-# VISUALIZATION 3: Energy Spike Analysis
-# ============================================================================
+
+# VISUALIZATION 3: Energy Infrastructure Attack Analysis
+# ======================================================
 
 # Load infrastructure data
 infra = pd.read_csv('../Data/russian_infrastructure_attacks.csv')
 infra['EVENT_DATE'] = pd.to_datetime(infra['EVENT_DATE'])
 
-# Filter for energy
+# Filter for energy and create monthly counts variable
 energy = infra[infra['TAGS_INFRASTRUCTURE'].str.contains('Energy', case=False, na=False)].copy()
-
-# Monthly counts
 monthly_energy = energy.groupby(energy['EVENT_DATE'].dt.to_period('M')).size()
 
-# Create figure
+# Create figure and plot monthly energy strikes
 fig, ax = plt.subplots(figsize=(14, 7))
-
-# Plot monthly energy strikes
 months = [p.to_timestamp() for p in monthly_energy.index]
 ax.bar(months, monthly_energy.values, width=20, color='#5D6D7E', alpha=0.7, 
        edgecolor='#2C3E50', linewidth=1.5)
 
-# Highlight October spike
+# Highlight October spike, add value labels, and adjust formatting
 oct_idx = list(monthly_energy.index).index(pd.Period('2022-10', 'M'))
 ax.bar(months[oct_idx], monthly_energy.values[oct_idx], width=20, 
        color='#D35400', alpha=1, edgecolor='#A04000', linewidth=2,
        label='October 2022 Spike')
 
-# Add value labels
 for month, value in zip(months, monthly_energy.values):
     ax.text(month, value + 1, str(value), ha='center', fontsize=10, fontweight='bold')
 
-# Formatting
+
 ax.set_xlabel('Month', fontsize=13, fontweight='bold')
 ax.set_ylabel('Energy Infrastructure Strikes', fontsize=13, fontweight='bold')
 ax.set_title('Russian Energy Infrastructure Targeting in Ukraine\nFebruary 2022 - March 2023',
@@ -156,27 +146,25 @@ ax.grid(axis='y', alpha=0.3)
 
 plt.tight_layout()
 plt.savefig('../Output/energy_spike_october_2022.png', dpi=300, bbox_inches='tight')
-print("✓ Created: energy_spike_october_2022.png")
 plt.close()
 
-# ============================================================================
+
 # GEOGRAPHIC ANALYSIS TABLES
-# ============================================================================
+# ==========================
 
-print("\n" + "="*80)
-print("CREATING GEOGRAPHIC ANALYSIS")
-print("="*80)
+print("\n" + "="*40)
+print("GEOGRAPHIC ANALYSIS")
+print("="*40)
 
-# Load datasets fresh (in case they weren't loaded earlier)
+# Re-load datasets to avoid errors
 civilian = pd.read_csv('../Data/civilian_strikes.csv')
 infra_full = pd.read_csv('../Data/russian_infrastructure_attacks.csv')
 energy_full = infra_full[infra_full['TAGS_INFRASTRUCTURE'].str.contains('Energy', case=False, na=False)].copy()
 
-# ============================================================================
 # TABLE 1: Regional Distribution Comparison
-# ============================================================================
+# =========================================
 
-# Top regions for each strike type
+# Identify top regions for each strike type
 civilian_regions = civilian.groupby('admin1').size().sort_values(ascending=False).head(15)
 infra_regions = infra_full.groupby('ADMIN1').size().sort_values(ascending=False).head(15)
 energy_regions = energy_full.groupby('ADMIN1').size().sort_values(ascending=False).head(15)
@@ -188,7 +176,7 @@ regional_comparison = pd.DataFrame({
     'Energy_Strikes': energy_regions
 }).fillna(0).astype(int)
 
-# Calculate percentages
+# Calculate percentages and save as csv
 regional_comparison['Civilian_%'] = (regional_comparison['Civilian_Strikes'] / 
                                      regional_comparison['Civilian_Strikes'].sum() * 100).round(1)
 regional_comparison['Infrastructure_%'] = (regional_comparison['Infrastructure_Strikes'] / 
@@ -201,23 +189,21 @@ regional_comparison['Total'] = (regional_comparison['Civilian_Strikes'] +
                                 regional_comparison['Infrastructure_Strikes'])
 regional_comparison = regional_comparison.sort_values('Total', ascending=False)
 
-# Save
 regional_comparison.to_csv('../Output/regional_distribution.csv')
-print("\n✓ Saved: ../Output/regional_distribution.csv")
 
 # Display top 10
 print("\nTOP 10 REGIONS BY TOTAL STRIKES:")
 print(regional_comparison[['Civilian_Strikes', 'Infrastructure_Strikes', 
                            'Energy_Strikes', 'Total']].head(10))
 
-# ============================================================================
-# TABLE 2: Infrastructure Type Breakdown by Region
-# ============================================================================
 
-# Get top 10 regions
+# TABLE 2: Infrastructure Type Breakdown by Region
+# ================================================
+
+# Find top 10 regions
 top_regions = infra_full['ADMIN1'].value_counts().head(10).index
 
-# For each top region, count infrastructure types
+# For each region, count infrastructure types
 infra_type_breakdown = []
 for region in top_regions:
     region_data = infra_full[infra_full['ADMIN1'] == region]
@@ -238,24 +224,23 @@ for region in top_regions:
 
 infra_by_type = pd.DataFrame(infra_type_breakdown)
 infra_by_type.to_csv('../Output/infrastructure_types_by_region.csv', index=False)
-print("\n✓ Saved: ../Output/infrastructure_types_by_region.csv")
 
 print("\nINFRASTRUCTURE TYPES BY REGION (Top 10):")
 print(infra_by_type)
 
-# ============================================================================
+
 # VISUALIZATION 5: Geographic Distribution Bar Chart
-# ============================================================================
+# ==================================================
 
 fig, ax = plt.subplots(figsize=(14, 8))
 
-# Top 10 regions - NOW regional_comparison is defined!
+# Top 10 regions 
 top_10 = regional_comparison.head(10)
 regions = top_10.index
 x_pos = np.arange(len(regions))
 width = 0.25
 
-# Create grouped bars
+# Create grouped bars and adjust formatting
 ax.bar(x_pos - width, top_10['Civilian_Strikes'], width, 
        label='Civilian Strikes', color='#5DADE2', alpha=0.85)
 ax.bar(x_pos, top_10['Infrastructure_Strikes'], width, 
@@ -263,7 +248,6 @@ ax.bar(x_pos, top_10['Infrastructure_Strikes'], width,
 ax.bar(x_pos + width, top_10['Energy_Strikes'], width, 
        label='Energy Strikes', color='#F39C12', alpha=0.85)
 
-# Formatting
 ax.set_xlabel('Oblast/Region', fontsize=12, fontweight='bold')
 ax.set_ylabel('Number of Strikes', fontsize=12, fontweight='bold')
 ax.set_title('Strike Distribution by Region: Top 10 Most Targeted Areas\nFebruary 2022 - March 2023',
@@ -275,12 +259,11 @@ ax.grid(axis='y', alpha=0.3)
 
 plt.tight_layout()
 plt.savefig('../Output/geographic_distribution.png', dpi=300, bbox_inches='tight')
-print("\n✓ Created: geographic_distribution.png")
 plt.close()
 
-# ============================================================================
+
 # VISUALIZATION 6: Infrastructure Type Distribution (Pie Chart)
-# ============================================================================
+# =============================================================
 
 # Count total by infrastructure type
 type_counts = {
@@ -312,16 +295,15 @@ ax.set_title('Russian Infrastructure Strikes by Type\n1,791 total infrastructure
 
 plt.tight_layout()
 plt.savefig('../Output/infrastructure_types_distribution.png', dpi=300, bbox_inches='tight')
-print("✓ Created: infrastructure_types_distribution.png")
 plt.close()
 
-# ============================================================================
-# FINAL SUMMARY
-# ============================================================================
 
-print("\n" + "="*80)
+# FINAL SUMMARY
+# ==============
+
+print("\n" + "="*40)
 print("ALL VISUALIZATIONS AND TABLES COMPLETE")
-print("="*80)
+print("="*40)
 print("\nFiles created in ../Output/:")
 print("  1. civilian_strikes_diplomacy.png")
 print("  2. infrastructure_strikes_diplomacy.png")
@@ -332,9 +314,3 @@ print("  6. infrastructure_types_distribution.png")
 print("  7. regional_distribution.csv")
 print("  8. infrastructure_types_by_region.csv")
 
-print("\n" + "="*80)
-print("DAY 1 COMPLETE! 🎉")
-print("="*80)
-print("\nNext steps:")
-print("  Day 2: Draft README")
-print("  Day 3: Final polish and submission")

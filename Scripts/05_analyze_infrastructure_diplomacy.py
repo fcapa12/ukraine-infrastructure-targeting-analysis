@@ -55,10 +55,10 @@ for _, event in timeline.iterrows():
 results_df = pd.DataFrame(results)
 
 # Display results
-print("\n" + "="*60)
+print("\n" + "="*40)
 print("INFRASTRUCTURE STRIKE PATTERNS AROUND DIPLOMATIC EVENTS")
 print("(14-day windows before and after each event)")
-print("="*60)
+print("="*40)
 
 for _, row in results_df.iterrows():
     print(f"\n{row['event']} ({row['event_date'].strftime('%Y-%m-%d')})")
@@ -67,16 +67,13 @@ for _, row in results_df.iterrows():
     print(f"  After:  {row['after_count']} strikes ({row['after_daily_avg']:.1f}/day)")
     print(f"  Change: {row['change_pct']:+.1f}%")
 
-# Save results
+# Save results and preview visualizations
 results_df.to_csv('../Data/diplomatic_event_analysis_infrastructure.csv', index=False)
-print("\n✓ Saved analysis to ../Data/diplomatic_event_analysis_infrastructure.csv")
-
-# Quick visualization preview
 print("\n" + "="*40)
 print("KEY FINDINGS:")
 print("="*40)
 
-# Find events with biggest changes
+# Events with biggest changes
 increased = results_df[results_df['change_pct'] > 10].sort_values('change_pct', ascending=False)
 decreased = results_df[results_df['change_pct'] < -10].sort_values('change_pct')
 

@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Sun May  3 16:07:31 2026
+Created on Fri May 1 16:07:31 2026
 
 @author: francescapaccio
 """
 
 import pandas as pd
 
-# Load datasets - NOTE: civilian_strikes.csv uses LOWERCASE columns
+# Load datasets (civilian_strikes.csv uses lowercase columns)
 strikes = pd.read_csv('../Data/civilian_strikes.csv')
 strikes['event_date'] = pd.to_datetime(strikes['event_date'])  # lowercase
 
@@ -67,14 +67,11 @@ for _, row in results_df.iterrows():
     print(f"  After:  {row['after_count']} strikes ({row['after_daily_avg']:.1f}/day)")
     print(f"  Change: {row['change_pct']:+.1f}%")
 
-# Save results
+# Save results and print key findings
 results_df.to_csv('../Data/diplomatic_event_analysis.csv', index=False)
-print("\n✓ Saved analysis to ../Data/diplomatic_event_analysis.csv")
-
-# Key findings
-print("\n" + "="*80)
+print("\n" + "="*40)
 print("KEY FINDINGS:")
-print("="*80)
+print("="*40)
 
 increased = results_df[results_df['change_pct'] > 10].sort_values('change_pct', ascending=False)
 decreased = results_df[results_df['change_pct'] < -10].sort_values('change_pct')
