@@ -1,11 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-Created on Mon Apr 20 16:47:20 2026
-
-@author: francescapaccio
-"""
-
 # Differential Targeting Strategies: Russian Strikes and Diplomatic Coercion in Ukraine
 
 ## Executive Summary
@@ -19,20 +11,35 @@ Created on Mon Apr 20 16:47:20 2026
 ## Key Findings
 
 ### 1. Civilian Strikes during Political Negotiations
+
+![Civilian Strikes Response](Output/civilian_strikes_diplomacy.png)
+
 #- Antalya talks (no agreement): **+90% increase**
 #- Istanbul talks (progress): **-28% decrease**
 -# Pattern: Russia uses broad civilian targeting to create political pressure
 
 ### 2. Infrastructure Strikes during Economic Agreements
+
+![Infrastructure Strikes Response](Output/infrastructure_strikes_diplomacy.png)
+
 #- Grain deal signed: **+30% increase**
 #- Grain deal suspended: **+39% increase**
 #- Grain deal rejoined: **+41% increase**
 #- Pattern: Consistent infrastructure targeting takes contradicts supposed efforts at humanitarian/economic diplomacy
 
 ### 3. Energy Infrastructure Campaign
+
+![Energy Spike October 2022](Output/energy_spike_october_2022.png)
+
 #- **October 2022: 48 energy strikes** (+153% from September's 19)
 #- Systematic targeting of power generation/heating
 #- Timed for maximum winter impact and civilian harm
+
+### 4. Infrastructure Targeting Over Time
+
+![Infrastructure Timeline](Output/infrastructure_timeline_with_events.png)
+
+#- Weekly infrastructure strike patterns with diplomatic events marked by type.
 
 ## Data Sources
 
@@ -78,6 +85,7 @@ Created on Mon Apr 20 16:47:20 2026
 #**Geographic Analysis:**
 #- Regional distribution by oblast
 #- Infrastructure type breakdown by location
+#- See `Output/regional_distribution.csv` and `Output/infrastructure_types_by_region.csv`
 
 #**Limitations:**
 #- Analysis focuses on event-level strike data (discrete attacks)
@@ -124,3 +132,11 @@ Output/
 #**Tools:** Python (pandas, matplotlib), ACLED conflict data
 #**Analysis period:** February 24, 2022 - March 17, 2023  
 #**Statistical method:** Comparative temporal analysis with 14-day windows
+
+## Future Additions
+
+#Planned additions for summer 2026:
+#- QGIS spatial analysis and heat mapping
+#- Distance analysis from frontlines and population centers
+#- Temporal animations showing strike evolution
+#- Phase comparison (early vs late war patterns)
